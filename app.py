@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import streamlit as st
 
-from src.config import settings
+from src.config import PROJECT_ROOT, settings
+from src.data.database import initialize_database
+from src.data.excel_loader import load_workbook
 from src.ui.integration import (
     available_users,
     confirm_pending,
@@ -19,6 +21,32 @@ from src.ui.integration import (
 
 
 st.set_page_config(page_title="ParcelPilot AI", page_icon="P", layout="wide")
+
+
+def _ensure_database() -> None:
+    """Ensure the SQLite database exists and contains the required tables."""
+    required_tables = {"readme", "accounts", "orders", "tickets"}
+    db_path = settings.database_path
+    workbook_path = PROJECT_ROOT / "data" / "ParcelPilot_Assessment_Data.xlsx"
+
+    try:
+        if db_path.exists():
+            from src.data.database import DatabaseManager
+
+            existing_tables = set(DatabaseManager(db_path).list_tables())
+            if required_tables.issubset(existing_tables):
+                return
+
+        if not workbook_path.exists():
+            st.error(f"ParcelPilot workbook not found: {workbook_path}")
+            st.stop()
+
+        workbook = load_workbook(workbook_path)
+        initialize_database(db_path, workbook)
+
+    except Exception as exc:
+        st.error(f"Could not initialize ParcelPilot database: {exc}")
+        st.stop()
 
 
 def _initialize_state() -> None:
@@ -181,6 +209,7 @@ def _render_confirmation() -> None:
 
 
 def main() -> None:
+    _ensure_database()
     _initialize_state()
     _render_sidebar()
     user = st.session_state.authenticated_user
