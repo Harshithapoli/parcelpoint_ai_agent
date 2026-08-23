@@ -1,0 +1,12 @@
+chromadb
+langchain
+langchain-google-genai
+langgraph
+openpyxl
+pandas
+pydantic
+pymupdf
+pytest
+python-dotenv
+sentence-transformers
+streamlit

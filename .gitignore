@@ -1,0 +1,28 @@
+# Python environments and caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+
+# Generated vector stores and runtime databases
+data/processed/*
+!data/processed/.gitkeep
+chroma/
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+logs/
+*.log
+
+# IDE and local tooling files
+.idea/
+.vscode/
+.streamlit/secrets.toml
