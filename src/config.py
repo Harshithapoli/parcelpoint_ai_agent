@@ -13,12 +13,29 @@ _DOTENV_VALUES = dotenv_values(PROJECT_ROOT / ".env")
 
 
 def _config_value(name: str, default: str = "") -> str:
-	"""Use a non-empty process variable, otherwise use the repo-root .env value."""
-	process_value = os.getenv(name)
-	if process_value and process_value.strip():
-		return process_value
-	dotenv_value = _DOTENV_VALUES.get(name)
-	return dotenv_value if dotenv_value is not None else default
+    """Load config from environment, Streamlit secrets, or local .env."""
+
+    # 1. Environment variables
+    process_value = os.getenv(name)
+    if process_value and process_value.strip():
+        return process_value
+
+    # 2. Streamlit Cloud secrets
+    try:
+        import streamlit as st
+
+        secret_value = st.secrets.get(name)
+        if secret_value is not None and str(secret_value).strip():
+            return str(secret_value)
+    except Exception:
+        pass
+
+    # 3. Local .env
+    dotenv_value = _DOTENV_VALUES.get(name)
+    if dotenv_value is not None and str(dotenv_value).strip():
+        return str(dotenv_value)
+
+    return default
 
 
 @dataclass(frozen=True)

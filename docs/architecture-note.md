@@ -107,6 +107,8 @@ I chose LangGraph over a hand-rolled loop because the assessment explicitly asks
 
 The agent never accesses SQLite or ChromaDB directly — it only sees the five tools below. This keeps the security boundary (see §5) outside the LLM's control.
 
+Deployment: The Streamlit application is hosted on Streamlit Community Cloud. Deployment provides the runtime environment and public web interface while preserving the same LangGraph agent, RAG pipeline, SQLite data layer, authorization, confirmation workflow, and monitoring architecture validated locally.
+
 ## 2. Tool Design
 
 Three required categories, split into five concrete tools rather than one generic "do anything" tool:
